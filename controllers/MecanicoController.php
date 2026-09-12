@@ -8,8 +8,8 @@ declare(strict_types=1);
  */
 class MecanicoController
 {
-    private MecanicoModel $modeloMecanico;
-    private TallerModel $modeloTaller;
+    private MecanicoModel $mecanicoModel;
+    private TallerModel $tallerModel;
 
     /**
      * Inicializa el controlador verificando permisos de acceso y cargando los modelos requeridos.
@@ -20,8 +20,8 @@ class MecanicoController
         Auth::requerirRol([1, 2]);
 
         $db = (new Database())->getConnection();
-        $this->modeloMecanico = new MecanicoModel($db);
-        $this->modeloTaller = new TallerModel($db);
+        $this->mecanicoModel = new MecanicoModel($db);
+        $this->tallerModel = new TallerModel($db);
     }
 
     /**
@@ -30,10 +30,10 @@ class MecanicoController
     public function index(): void
     {
         if (Auth::esAdministrador()) {
-            $mecanicos = $this->modeloMecanico->obtenerTodos();
+            $mecanicos = $this->mecanicoModel->obtenerTodos();
         } else {
             // Un Encargado de Taller solo ve los mecanicos de su propio taller
-            $mecanicos = $this->modeloMecanico->obtenerPorTaller((int)$_SESSION['id_taller']);
+            $mecanicos = $this->mecanicoModel->obtenerPorTaller((int)$_SESSION['id_taller']);
         }
 
         $mensaje = $this->obtenerMensajeFlash();
@@ -53,8 +53,8 @@ class MecanicoController
         // ni siquiera manipulando el formulario, porque el valor nunca viene del POST.
         $tallerFijo = Auth::esAdministrador() ? null : (int)$_SESSION['id_taller'];
         $talleres = $tallerFijo === null
-            ? $this->modeloTaller->obtenerTodos()
-            : array_filter([$this->modeloTaller->obtenerPorId($tallerFijo)]);
+            ? $this->tallerModel->obtenerTodos()
+            : array_filter([$this->tallerModel->obtenerPorId($tallerFijo)]);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nombreCompleto = trim($_POST['nombre_completo'] ?? '');
@@ -66,7 +66,7 @@ class MecanicoController
             $errores = $this->validar($nombreCompleto, $codigoEmpleado, $idTaller);
 
             if (empty($errores)) {
-                $this->modeloMecanico->crear($nombreCompleto, $codigoEmpleado, $idTaller, $telefono, $fechaIngreso);
+                $this->mecanicoModel->crear($nombreCompleto, $codigoEmpleado, $idTaller, $telefono, $fechaIngreso);
                 $this->guardarMensajeFlash('Mecánico creado correctamente.', 'exito');
                 header('Location: /mecanico/index');
                 exit;
@@ -93,7 +93,7 @@ class MecanicoController
     public function editar(string $id): void
     {
         $idMecanico = (int)$id;
-        $mecanico = $this->modeloMecanico->obtenerPorId($idMecanico);
+        $mecanico = $this->mecanicoModel->obtenerPorId($idMecanico);
 
         if ($mecanico === null) {
             $this->guardarMensajeFlash('El mecánico que intentas editar no existe.', 'error');
@@ -109,8 +109,8 @@ class MecanicoController
 
         $tallerFijo = Auth::esAdministrador() ? null : (int)$_SESSION['id_taller'];
         $talleres = $tallerFijo === null
-            ? $this->modeloTaller->obtenerTodos()
-            : array_filter([$this->modeloTaller->obtenerPorId($tallerFijo)]);
+            ? $this->tallerModel->obtenerTodos()
+            : array_filter([$this->tallerModel->obtenerPorId($tallerFijo)]);
 
         $errores = [];
 
@@ -124,7 +124,7 @@ class MecanicoController
             $errores = $this->validar($nombreCompleto, $codigoEmpleado, $idTaller, $idMecanico);
 
             if (empty($errores)) {
-                $this->modeloMecanico->actualizar($idMecanico, $nombreCompleto, $codigoEmpleado, $idTaller, $telefono, $fechaIngreso);
+                $this->mecanicoModel->actualizar($idMecanico, $nombreCompleto, $codigoEmpleado, $idTaller, $telefono, $fechaIngreso);
                 $this->guardarMensajeFlash('Mecánico actualizado correctamente.', 'exito');
                 header('Location: /mecanico/index');
                 exit;
@@ -152,7 +152,7 @@ class MecanicoController
     public function desactivar(string $id): void
     {
         $idMecanico = (int)$id;
-        $mecanico = $this->modeloMecanico->obtenerPorId($idMecanico);
+        $mecanico = $this->mecanicoModel->obtenerPorId($idMecanico);
 
         if ($mecanico === null) {
             header('Location: /mecanico/index');
@@ -164,7 +164,7 @@ class MecanicoController
             die('No tienes permiso para desactivar mecánicos de otro taller.');
         }
 
-        if ($this->modeloMecanico->tieneAsignacionesActivas($idMecanico)) {
+        if ($this->mecanicoModel->tieneAsignacionesActivas($idMecanico)) {
             $this->guardarMensajeFlash(
                 'No se puede desactivar: este mecánico tiene herramientas asignadas activas. Reasigna o devuelve esas herramientas primero.',
                 'error'
@@ -173,7 +173,7 @@ class MecanicoController
             exit;
         }
 
-        $this->modeloMecanico->cambiarEstado($idMecanico, 0);
+        $this->mecanicoModel->cambiarEstado($idMecanico, 0);
         $this->guardarMensajeFlash('Mecánico desactivado.', 'exito');
         header('Location: /mecanico/index');
         exit;
@@ -187,7 +187,7 @@ class MecanicoController
     public function activar(string $id): void
     {
         $idMecanico = (int)$id;
-        $mecanico = $this->modeloMecanico->obtenerPorId($idMecanico);
+        $mecanico = $this->mecanicoModel->obtenerPorId($idMecanico);
 
         if ($mecanico === null) {
             header('Location: /mecanico/index');
@@ -199,7 +199,7 @@ class MecanicoController
             die('No tienes permiso para activar mecánicos de otro taller.');
         }
 
-        $this->modeloMecanico->cambiarEstado($idMecanico, 1);
+        $this->mecanicoModel->cambiarEstado($idMecanico, 1);
         $this->guardarMensajeFlash('Mecánico activado.', 'exito');
         header('Location: /mecanico/index');
         exit;
@@ -224,7 +224,7 @@ class MecanicoController
 
         if ($codigoEmpleado === '') {
             $errores[] = 'El código de empleado es obligatorio.';
-        } elseif ($this->modeloMecanico->existeCodigoEmpleado($codigoEmpleado, $idExcluir)) {
+        } elseif ($this->mecanicoModel->existeCodigoEmpleado($codigoEmpleado, $idExcluir)) {
             $errores[] = 'Ese código de empleado ya está en uso por otro mecánico.';
         }
 

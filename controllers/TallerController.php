@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 class TallerController
 {
-    private TallerModel $modelo;
+    private TallerModel $tallerModel;
 
     /**
      * Inicializa el controlador exigiendo una sesión activa y configurando la conexión al modelo de talleres.
@@ -20,7 +20,7 @@ class TallerController
 
         $database = new Database();
         $db = $database->getConnection();
-        $this->modelo = new TallerModel($db);
+        $this->tallerModel = new TallerModel($db);
     }
 
     /**
@@ -29,7 +29,7 @@ class TallerController
     // Listar todos los talleres (accion por defecto)
     public function index(): void
     {
-        $talleres = $this->modelo->obtenerTodos();
+        $talleres = $this->tallerModel->obtenerTodos();
         $mensaje = $this->obtenerMensajeFlash();
 
         require_once __DIR__ . '/../views/taller/taller_index.php';
@@ -53,7 +53,7 @@ class TallerController
             $errores = $this->validar($nombre, $direccion);
 
             if (empty($errores)) {
-                $this->modelo->crear($nombre, $direccion, $telefono);
+                $this->tallerModel->crear($nombre, $direccion, $telefono);
                 $this->guardarMensajeFlash('Taller creado correctamente.', 'exito');
                 header('Location: /taller/index');
                 exit;
@@ -76,7 +76,7 @@ class TallerController
     {
         Auth::requerirRol([1]);
         $idTaller = (int)$id;
-        $taller = $this->modelo->obtenerPorId($idTaller);
+        $taller = $this->tallerModel->obtenerPorId($idTaller);
 
         if ($taller === null) {
             $this->guardarMensajeFlash('El taller que intentas editar no existe.', 'error');
@@ -94,7 +94,7 @@ class TallerController
             $errores = $this->validar($nombre, $direccion);
 
             if (empty($errores)) {
-                $this->modelo->actualizar($idTaller, $nombre, $direccion, $telefono);
+                $this->tallerModel->actualizar($idTaller, $nombre, $direccion, $telefono);
                 $this->guardarMensajeFlash('Taller actualizado correctamente.', 'exito');
                 header('Location: /taller/index');
                 exit;
@@ -118,13 +118,13 @@ class TallerController
         $idTaller = (int)$id;
 
         // Validar si el taller tiene mecánicos o herramientas asociadas antes de permitir la desactivación
-        if ($this->modelo->tieneRegistrosAsociados($idTaller)) {
+        if ($this->tallerModel->tieneRegistrosAsociados($idTaller)) {
             $this->guardarMensajeFlash('No se puede desactivar el taller porque tiene mecánicos o herramientas asignados.', 'error');
             header('Location: /taller/index');
             exit;
         }
 
-        $this->modelo->cambiarEstado($idTaller, 0);
+        $this->tallerModel->cambiarEstado($idTaller, 0);
         $this->guardarMensajeFlash('Taller desactivado.', 'exito');
         header('Location: /taller/index');
         exit;
@@ -139,7 +139,7 @@ class TallerController
     public function activar(string $id): void
     {
         Auth::requerirRol([1]);
-        $this->modelo->cambiarEstado((int)$id, 1);
+        $this->tallerModel->cambiarEstado((int)$id, 1);
         $this->guardarMensajeFlash('Taller activado.', 'exito');
         header('Location: /taller/index');
         exit;

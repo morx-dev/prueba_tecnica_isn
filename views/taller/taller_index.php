@@ -65,7 +65,7 @@ $mensaje = $mensaje ?? null;
                         <a href="/taller/editar/<?= (int)$taller['id_taller'] ?>">Editar</a>
                         <?php if ((int)$taller['estado'] === 1): ?>
                             <a href="/taller/desactivar/<?= (int)$taller['id_taller'] ?>"
-                               onclick="return confirm('¿Desactivar este taller?');">Desactivar</a>
+                                onclick="return confirm('¿Desactivar este taller?');">Desactivar</a>
                         <?php else: ?>
                             <a href="/taller/activar/<?= (int)$taller['id_taller'] ?>">Activar</a>
                         <?php endif; ?>

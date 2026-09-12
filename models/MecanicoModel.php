@@ -2,10 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Modelo para la gestión de mecánicos en la base de datos.
- * Maneja las consultas de listado, filtrado por taller, búsqueda individual,
- * persistencia de datos (creación/actualización), control de estados, validaciones
- * de códigos duplicados y verificación de asignaciones activas de herramientas.
+ * Modelo para la gestión y control del catálogo de mecánicos en los talleres.
  */
 class MecanicoModel
 {
@@ -22,9 +19,9 @@ class MecanicoModel
     }
 
     /**
-     * Obtiene el listado completo de todos los mecánicos registrados con su respectivo taller.
+     * Obtiene todos los mecánicos registrados con información de su taller correspondiente.
      * 
-     * @return array Arreglo asociativo con los registros de mecánicos.
+     * @return array Arreglo asociativo con todos los mecánicos.
      */
     public function obtenerTodos(): array
     {
@@ -38,13 +35,11 @@ class MecanicoModel
     }
 
     /**
-     * Obtiene únicamente los mecánicos pertenecientes a un taller específico.
-     * Usado cuando quien consulta es un Encargado de Taller: solo ve los suyos.
+     * Obtiene los mecánicos pertenecientes a un taller específico.
      * 
-     * @param int $idTaller Identificador único del taller.
+     * @param int $idTaller Identificador del taller.
      * @return array Arreglo asociativo con los mecánicos del taller.
      */
-    // Usado cuando quien consulta es un Encargado de Taller: solo ve los suyos
     public function obtenerPorTaller(int $idTaller): array
     {
         $stmt = $this->db->prepare(
@@ -58,10 +53,26 @@ class MecanicoModel
         return $stmt->fetchAll();
     }
 
+    // Usado por el formulario de asignacion de herramientas: solo mecanicos activos de ese taller
     /**
-     * Busca y retorna los datos de un mecánico específico por su ID, incluyendo el nombre del taller.
+     * Obtiene únicamente los mecánicos activos de un taller específico.
      * 
-     * @param int $id Identificador único del mecánico.
+     * @param int $idTaller Identificador del taller.
+     * @return array Arreglo asociativo con los mecánicos activos ordenados por nombre.
+     */
+    public function obtenerActivosPorTaller(int $idTaller): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM mecanicos WHERE id_taller = :id_taller AND estado = 1 ORDER BY nombre_completo ASC"
+        );
+        $stmt->execute([':id_taller' => $idTaller]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Busca un mecánico específico por su identificador único.
+     * 
+     * @param int $id Identificador del mecánico.
      * @return array|null Arreglo con los datos del mecánico o null si no existe.
      */
     public function obtenerPorId(int $id): ?array
@@ -78,13 +89,13 @@ class MecanicoModel
     }
 
     /**
-     * Inserta un nuevo registro de mecánico en la base de datos con estado activo por defecto (1).
+     * Registra un nuevo mecánico en la base de datos con estado activo inicial.
      * 
-     * @param string      $nombreCompleto Nombre y apellido del mecánico.
-     * @param string      $codigoEmpleado Código de identificación interna del empleado.
-     * @param int         $idTaller       ID del taller asignado.
-     * @param string|null $telefono       Número de teléfono opcional.
-     * @param string|null $fechaIngreso   Fecha de alta o ingreso laboral opcional.
+     * @param string      $nombreCompleto Nombre completo del empleado.
+     * @param string      $codigoEmpleado Código único de empleado.
+     * @param int         $idTaller       Identificador del taller al que pertenece.
+     * @param string|null $telefono       Número de teléfono de contacto.
+     * @param string|null $fechaIngreso   Fecha de ingreso a la institución.
      * @return bool True si la inserción fue exitosa, false en caso contrario.
      */
     public function crear(
@@ -108,15 +119,15 @@ class MecanicoModel
     }
 
     /**
-     * Actualiza la información de un mecánico existente en el sistema.
+     * Actualiza la información del perfil y datos de un mecánico existente.
      * 
-     * @param int         $id             ID del mecánico a actualizar.
-     * @param string      $nombreCompleto Nuevo nombre completo.
-     * @param string      $codigoEmpleado Nuevo código de empleado.
-     * @param int         $idTaller       Nuevo ID de taller asignado.
+     * @param int         $id             Identificador único del mecánico.
+     * @param string      $nombreCompleto Nombre completo actualizado.
+     * @param string      $codigoEmpleado Código de empleado actualizado.
+     * @param int         $idTaller       Identificador del taller asignado.
      * @param string|null $telefono       Teléfono actualizado.
      * @param string|null $fechaIngreso   Fecha de ingreso actualizada.
-     * @return bool True si la actualización se realizó correctamente, false si no.
+     * @return bool True si la actualización fue exitosa, false en caso contrario.
      */
     public function actualizar(
         int $id,
@@ -146,11 +157,11 @@ class MecanicoModel
     }
 
     /**
-     * Modifica el estado lógico (activo/inactivo) de un mecánico.
+     * Modifica el estado activo o inactivo de un mecánico.
      * 
      * @param int $id     Identificador del mecánico.
-     * @param int $estado Nuevo estado (1 = Activo, 0 = Inactivo).
-     * @return bool True si la operación fue exitosa, false si falló.
+     * @param int $estado Nuevo estado (1 para activo, 0 para inactivo).
+     * @return bool True si la operación se ejecutó correctamente, false en caso contrario.
      */
     public function cambiarEstado(int $id, int $estado): bool
     {
@@ -159,11 +170,11 @@ class MecanicoModel
     }
 
     /**
-     * Verifica si un código de empleado ya se encuentra registrado en el sistema.
-     * Permite excluir un ID específico (útil durante procesos de edición).
+     * Verifica si un código de empleado ya se encuentra registrado en el sistema,
+     * permitiendo excluir opcionalmente a un ID durante procesos de edición.
      * 
-     * @param string    $codigo    Código de empleado a consultar.
-     * @param int|null  $idExcluir ID opcional del mecánico a ignorar en la búsqueda.
+     * @param string   $codigo      Código de empleado a verificar.
+     * @param int|null $idExcluir   Identificador del mecánico a ignorar en la consulta (opcional).
      * @return bool True si el código ya existe, false si está disponible.
      */
     public function existeCodigoEmpleado(string $codigo, ?int $idExcluir = null): bool
@@ -183,7 +194,7 @@ class MecanicoModel
     }
 
     /**
-     * Comprueba si el mecánico posee alguna asignación activa de herramientas vinculada.
+     * Comprueba si un mecánico cuenta con herramientas asignadas con estado activo.
      * 
      * @param int $id Identificador del mecánico.
      * @return bool True si tiene asignaciones activas, false en caso contrario.
