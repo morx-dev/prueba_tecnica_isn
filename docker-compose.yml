@@ -1,0 +1,37 @@
+# =========================================================================
+# Configuración de Docker Compose para entorno de desarrollo local (MVC)
+# Orquesta dos servicios principales: el servidor web Apache/PHP y la base de datos MariaDB.
+# =========================================================================
+
+version: '3.8'
+
+services:
+  # Servicio web (Aplicación PHP con Apache)
+  web:
+    build: .
+    ports:
+      - "8081:80"
+    volumes:
+      # Sincroniza el código fuente local con el directorio raíz del servidor web en el contenedor
+      - .:/var/www/html
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+
+  # Servicio de base de datos (MariaDB)
+  db:
+    image: mariadb:10.5
+    restart: always
+    environment:
+      # Credenciales y base de datos inicial configuradas para el sistema
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: hogares_isn_inventario
+    ports:
+      - "3307:3306"
+    volumes:
+      # Volumen persistente para almacenar los datos de MariaDB de forma segura
+      - db_data:/var/lib/mysql
+
+# Declaración de volúmenes persistentes
+volumes:
+  db_data:

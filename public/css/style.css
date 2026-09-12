@@ -1,0 +1,171 @@
+/* =========================================================================
+   Corrección de alineación del listado y bordes redondeados en la tabla
+   ========================================================================= */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    background-color: #ffffff;
+    color: #333333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Contenedor general para alinear título, botón y alertas al ancho de la tabla */
+h1, .alerta, .boton {
+    width: 100%;
+    max-width: 1000px;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* Alertas y mensajes flash */
+.alerta {
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.alerta-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alerta-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alerta ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* Botones */
+.boton {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.boton-primario {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.boton-primario:hover {
+    background-color: #0056b3;
+}
+
+.boton-secundario {
+    background-color: #6c757d;
+    color: #ffffff;
+    margin-left: 5px;
+}
+
+.boton-secundario:hover {
+    background-color: #5a6268;
+}
+
+/* Tablas con bordes redondeados manteniendo su color original */
+.tabla {
+    width: 100%;
+    max-width: 1000px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    border-radius: 6px;
+    overflow: hidden; /* Asegura que las esquinas respeten el border-radius */
+}
+
+.tabla th,
+.tabla td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.tabla th {
+    background-color: #343a40;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.tabla tr:last-child td {
+    border-bottom: none; /* Elimina la línea del último elemento */
+}
+
+.tabla tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Etiquetas de estado */
+.etiqueta {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.etiqueta-activo {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.etiqueta-inactivo {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Formularios - Centrados */
+form {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #495057;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+    border-color: #80bdff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}

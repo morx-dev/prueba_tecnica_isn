@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+    # =========================================================================
+    # Configuración de reescritura de URLs para arquitectura MVC frontal
+    # =========================================================================
+    RewriteEngine On
+        
+    # Establece la base de la ruta del directorio public
+    RewriteBase /
+
+    # Si el archivo físico o la carpeta existen en el servidor, no aplicar reescritura.
+    # Evita que recursos estáticos (CSS, JS, imágenes) sean interceptados por el index.php.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Redirigir todas las demás solicitudes de manera absoluta hacia index.php.
+    # Captura cualquier ruta virtual y la pasa como parámetro URL preservando los argumentos ([QSA,L]).
+    RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
+</IfModule>
