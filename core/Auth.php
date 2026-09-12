@@ -9,12 +9,19 @@ declare(strict_types=1);
  */
 class Auth
 {
+    /**
+     * Verifica si existe una sesión activa de usuario.
+     * 
+     * @return bool True si el usuario ha iniciado sesión, false en caso contrario.
+     */
     public static function estaLogueado(): bool
     {
         return isset($_SESSION['id_usuario']);
     }
 
-    // Corta la ejecucion y redirige al login si no hay sesion activa
+    /**
+     * Corta la ejecución y redirige al login si no hay sesión activa.
+     */
     public static function requerirLogin(): void
     {
         if (!self::estaLogueado()) {
@@ -23,7 +30,11 @@ class Auth
         }
     }
 
-    // Ademas de exigir login, exige que el rol este en la lista permitida
+    /**
+     * Además de exigir login, exige que el rol del usuario actual esté en la lista permitida.
+     * 
+     * @param array $idsRolPermitidos Lista de identificadores de roles con acceso autorizado.
+     */
     public static function requerirRol(array $idsRolPermitidos): void
     {
         self::requerirLogin();
@@ -33,6 +44,11 @@ class Auth
         }
     }
 
+    /**
+     * Obtiene los datos básicos del usuario actualmente autenticado desde la sesión.
+     * 
+     * @return array|null Arreglo asociativo con la información del usuario o null si no hay sesión.
+     */
     public static function usuarioActual(): ?array
     {
         if (!self::estaLogueado()) {

@@ -1,8 +1,10 @@
 <?php
 /**
+ * Vista del listado general de usuarios registrados en el sistema.
+ * 
  * Variables disponibles aqui (pasadas por UsuarioController::index()):
- * array $usuarios
- * array|null $mensaje
+ * @var array      $usuarios Arreglo con los registros de usuarios, roles y talleres.
+ * @var array|null $mensaje  Arreglo opcional con alertas flash de éxito o error.
  */
 ?>
 <!DOCTYPE html>

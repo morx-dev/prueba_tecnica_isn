@@ -1,7 +1,9 @@
 <?php
 /**
+ * Vista de autenticación y formulario de inicio de sesión del sistema.
+ * 
  * Variable disponible aqui (pasada por UsuarioController::login()):
- * string|null $error
+ * @var string|null $error Mensaje de error de autenticación en caso de fallo, o null si no hay error.
  */
 ?>
 <!DOCTYPE html>

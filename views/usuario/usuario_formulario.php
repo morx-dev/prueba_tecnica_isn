@@ -1,9 +1,11 @@
 <?php
 /**
- * Variables disponibles aqui (pasadas por UsuarioController::crear()):
- * array $errores
- * array $roles      filas de la tabla roles
- * array $talleres   filas de la tabla talleres
+ * Vista de formulario para el registro de nuevos usuarios en el sistema.
+ * 
+ * Variables disponibles aquí (pasadas por UsuarioController::crear()):
+ * @var array $errores  Lista de mensajes de error de validación pendientes.
+ * @var array $roles    Filas de la tabla roles para el selector desplegable.
+ * @var array $talleres Filas de la tabla talleres para la asignación opcional.
  */
 ?>
 <!DOCTYPE html>

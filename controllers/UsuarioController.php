@@ -1,10 +1,17 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Controlador para la gestión de usuarios, encargándose de la autenticación, 
+ * control de sesiones, listados, creación y cambios de estado (activo/inactivo).
+ */
 class UsuarioController
 {
     private UsuarioModel $usuarioModel;
 
+    /**
+     * Inicializa la conexión a la base de datos y carga el modelo de usuarios.
+     */
     public function __construct()
     {
         $database = new Database();
@@ -12,7 +19,9 @@ class UsuarioController
         $this->usuarioModel = new UsuarioModel($db);
     }
 
-    // Formulario de login y su procesamiento. Esta es la unica accion publica del sistema.
+    /**
+     * Formulario de login y su procesamiento. Esta es la unica accion publica del sistema.
+     */
     public function login(): void
     {
         // Si ya esta logueado, no tiene sentido que vea el login de nuevo
@@ -47,6 +56,9 @@ class UsuarioController
         require_once __DIR__ . '/../views/usuario/usuario_login.php';
     }
 
+    /**
+     * Cierra la sesión activa del usuario y redirige a la vista de autenticación.
+     */
     public function logout(): void
     {
         $_SESSION = [];
@@ -55,7 +67,9 @@ class UsuarioController
         exit;
     }
 
-    // Listado de usuarios (solo Administrador, id_rol = 1)
+    /**
+     * Listado general de usuarios (restringido únicamente al rol de Administrador, id_rol = 1).
+     */
     public function index(): void
     {
         Auth::requerirRol([1]);
@@ -66,7 +80,9 @@ class UsuarioController
         require_once __DIR__ . '/../views/usuario/usuario_index.php';
     }
 
-    // Formulario de creacion de usuarios (solo Administrador)
+    /**
+     * Muestra el formulario de creación de usuarios y procesa su registro (restringido al Administrador).
+     */
     public function crear(): void
     {
         Auth::requerirRol([1]);
@@ -95,6 +111,11 @@ class UsuarioController
         require_once __DIR__ . '/../views/usuario/usuario_formulario.php';
     }
 
+    /**
+     * Desactiva lógicamente a un usuario existente preservando su historial (restringido al Administrador).
+     * 
+     * @param string $id Identificador del usuario a desactivar.
+     */
     public function desactivar(string $id): void
     {
         Auth::requerirRol([1]);
@@ -104,6 +125,11 @@ class UsuarioController
         exit;
     }
 
+    /**
+     * Reactiva a un usuario previamente desactivado (restringido al Administrador).
+     * 
+     * @param string $id Identificador del usuario a activar.
+     */
     public function activar(string $id): void
     {
         Auth::requerirRol([1]);
@@ -113,6 +139,15 @@ class UsuarioController
         exit;
     }
 
+    /**
+     * Valida los campos ingresados en el formulario de creación de usuarios.
+     * 
+     * @param string $nombreCompleto Nombre completo proporcionado.
+     * @param string $usuario Nombre de usuario único.
+     * @param string $passwordPlano Contraseña en texto plano.
+     * @param int $idRol Identificador numérico del rol.
+     * @return array Lista de errores encontrados durante la validación.
+     */
     private function validar(string $nombreCompleto, string $usuario, string $passwordPlano, int $idRol): array
     {
         $errores = [];
@@ -140,11 +175,22 @@ class UsuarioController
 
     // --- Mensajes flash (mismo patron que TallerController, copialo igual en los proximos modulos) ---
 
+    /**
+     * Guarda un mensaje temporal en la sesión para mostrarlo después de una redirección.
+     * 
+     * @param string $texto Texto descriptivo del mensaje.
+     * @param string $tipo Tipo de alerta (ej. 'exito', 'error').
+     */
     private function guardarMensajeFlash(string $texto, string $tipo): void
     {
         $_SESSION['flash'] = ['texto' => $texto, 'tipo' => $tipo];
     }
 
+    /**
+     * Recupera y elimina el mensaje flash actual de la sesión.
+     * 
+     * @return array|null Arreglo asociativo con el texto y tipo, o null si no hay mensajes pendientes.
+     */
     private function obtenerMensajeFlash(): ?array
     {
         if (!isset($_SESSION['flash'])) {
