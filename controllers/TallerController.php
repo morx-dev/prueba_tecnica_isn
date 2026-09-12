@@ -1,10 +1,18 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Controlador para la gestión y administración de talleres.
+ * Controla el listado, creación, actualización, activación y desactivación de talleres,
+ * restringiendo el acceso administrativo mediante autenticación de roles.
+ */
 class TallerController
 {
     private TallerModel $modelo;
 
+    /**
+     * Inicializa el controlador exigiendo una sesión activa y configurando la conexión al modelo de talleres.
+     */
     public function __construct()
     {
         // Ninguna accion de este controlador es publica: exige sesion activa.
@@ -15,6 +23,9 @@ class TallerController
         $this->modelo = new TallerModel($db);
     }
 
+    /**
+     * Lista todos los talleres registrados en el sistema (acción por defecto).
+     */
     // Listar todos los talleres (accion por defecto)
     public function index(): void
     {
@@ -24,6 +35,9 @@ class TallerController
         require_once __DIR__ . '/../views/taller/taller_index.php';
     }
 
+    /**
+     * Muestra y procesa el formulario para la creación de un nuevo taller (exclusivo Administrador).
+     */
     // Mostrar formulario de creacion y procesarlo
     public function crear(): void
     {
@@ -52,6 +66,11 @@ class TallerController
         require_once __DIR__ . '/../views/taller/taller_formulario.php';
     }
 
+    /**
+     * Muestra y procesa el formulario para la edición de un taller existente (exclusivo Administrador).
+     * 
+     * @param string $id Identificador único del taller recibido por ruta.
+     */
     // Mostrar formulario de edicion y procesarlo
     public function editar(string $id): void
     {
@@ -88,16 +107,34 @@ class TallerController
         require_once __DIR__ . '/../views/taller/taller_formulario.php';
     }
 
-    // Desactivar un taller (borrado logico, preserva el historial)
+    /**
+     * Realiza un borrado lógico (desactivación) de un taller, preservando el historial (exclusivo Administrador).
+     * 
+     * @param string $id Identificador del taller a desactivar.
+     */
     public function desactivar(string $id): void
     {
         Auth::requerirRol([1]);
-        $this->modelo->cambiarEstado((int)$id, 0);
+        $idTaller = (int)$id;
+
+        // Validar si el taller tiene mecánicos o herramientas asociadas antes de permitir la desactivación
+        if ($this->modelo->tieneRegistrosAsociados($idTaller)) {
+            $this->guardarMensajeFlash('No se puede desactivar el taller porque tiene mecánicos o herramientas asignados.', 'error');
+            header('Location: /taller/index');
+            exit;
+        }
+
+        $this->modelo->cambiarEstado($idTaller, 0);
         $this->guardarMensajeFlash('Taller desactivado.', 'exito');
         header('Location: /taller/index');
         exit;
     }
 
+    /**
+     * Reactiva un taller que se encontraba previamente desactivado (exclusivo Administrador).
+     * 
+     * @param string $id Identificador del taller a activar.
+     */
     // Reactivar un taller previamente desactivado
     public function activar(string $id): void
     {
@@ -108,6 +145,13 @@ class TallerController
         exit;
     }
 
+    /**
+     * Valida los campos básicos obligatorios del formulario de taller.
+     * 
+     * @param string $nombre    Nombre ingresado.
+     * @param string $direccion Dirección ingresada.
+     * @return array Arreglo con los errores de validación encontrados.
+     */
     // Validaciones basicas del formulario
     private function validar(string $nombre, string $direccion): array
     {
@@ -123,11 +167,22 @@ class TallerController
 
     // --- Mensajes flash (se muestran una sola vez, tras un redirect) ---
 
+    /**
+     * Almacena un mensaje flash en la sesión para notificaciones temporales.
+     * 
+     * @param string $texto Contenido del mensaje.
+     * @param string $tipo  Tipo de alerta (ej. 'exito', 'error').
+     */
     private function guardarMensajeFlash(string $texto, string $tipo): void
     {
         $_SESSION['flash'] = ['texto' => $texto, 'tipo' => $tipo];
     }
 
+    /**
+     * Recupera y limpia el mensaje flash de la sesión actual.
+     * 
+     * @return array|null Datos del mensaje flash o null si no existe.
+     */
     private function obtenerMensajeFlash(): ?array
     {
         if (!isset($_SESSION['flash'])) {

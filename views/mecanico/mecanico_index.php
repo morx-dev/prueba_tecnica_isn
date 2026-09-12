@@ -1,8 +1,10 @@
 <?php
 /**
- * Variables disponibles aqui (pasadas por MecanicoController::index()):
- * array $mecanicos
- * array|null $mensaje
+ * Vista de listado principal para la gestión de mecánicos.
+ * 
+ * Variables disponibles (pasadas por MecanicoController::index()):
+ * @var array      $mecanicos Listado de registros de mecánicos recuperados de la base de datos.
+ * @var array|null $mensaje   Arreglo opcional con notificaciones de éxito o error para mostrar al usuario.
  */
 ?>
 <!DOCTYPE html>
@@ -14,16 +16,23 @@
 </head>
 <body>
 
-<?php require __DIR__ . '/../partials/navbar.php'; ?>
+<?php 
+// Inclusión de la barra de navegación compartida del sistema
+require __DIR__ . '/../partials/navbar.php'; 
+?>
 
 <h1>Mecánicos</h1>
 
-<?php if ($mensaje !== null): ?>
+<?php 
+// Muestra un bloque de alerta dinámico si existe un mensaje flash proveniente del controlador
+if ($mensaje !== null): 
+?>
     <div class="alerta alerta-<?= htmlspecialchars($mensaje['tipo']) ?>">
         <?= htmlspecialchars($mensaje['texto']) ?>
     </div>
 <?php endif; ?>
 
+<!-- Botón de acceso directo para registrar un nuevo mecánico -->
 <a href="/mecanico/crear" class="boton boton-primario">+ Nuevo mecánico</a>
 
 <table class="tabla">
@@ -40,6 +49,7 @@
     </thead>
     <tbody>
         <?php if (empty($mecanicos)): ?>
+            <!-- Fila informativa mostrada cuando el listado de mecánicos está vacío -->
             <tr><td colspan="7">No hay mecánicos registrados todavía.</td></tr>
         <?php else: ?>
             <?php foreach ($mecanicos as $mecanico): ?>
@@ -57,11 +67,14 @@
                         <?php endif; ?>
                     </td>
                     <td>
+                        <!-- Enlace para redirigir al formulario de edición del mecánico -->
                         <a href="/mecanico/editar/<?= (int)$mecanico['id_mecanico'] ?>">Editar</a>
                         <?php if ((int)$mecanico['estado'] === 1): ?>
+                            <!-- Acción para desactivar con confirmación previa en JavaScript -->
                             <a href="/mecanico/desactivar/<?= (int)$mecanico['id_mecanico'] ?>"
                                onclick="return confirm('¿Desactivar este mecánico?');">Desactivar</a>
                         <?php else: ?>
+                            <!-- Acción para reactivar al mecánico -->
                             <a href="/mecanico/activar/<?= (int)$mecanico['id_mecanico'] ?>">Activar</a>
                         <?php endif; ?>
                     </td>

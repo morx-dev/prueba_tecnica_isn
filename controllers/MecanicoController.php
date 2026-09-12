@@ -1,11 +1,19 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Controlador para la gestión integral de mecánicos.
+ * Administra el listado, creación, edición, activación y desactivación de mecánicos,
+ * aplicando restricciones de seguridad y control de acceso por roles y talleres.
+ */
 class MecanicoController
 {
     private MecanicoModel $modeloMecanico;
     private TallerModel $modeloTaller;
 
+    /**
+     * Inicializa el controlador verificando permisos de acceso y cargando los modelos requeridos.
+     */
     public function __construct()
     {
         // Solo Administrador (1) y Encargado de Taller (2) pueden entrar a este modulo
@@ -16,6 +24,9 @@ class MecanicoController
         $this->modeloTaller = new TallerModel($db);
     }
 
+    /**
+     * Muestra el listado de mecánicos aplicando filtros según el rol del usuario autenticado.
+     */
     public function index(): void
     {
         if (Auth::esAdministrador()) {
@@ -30,6 +41,9 @@ class MecanicoController
         require_once __DIR__ . '/../views/mecanico/mecanico_index.php';
     }
 
+    /**
+     * Procesa la creación de un nuevo mecánico, manejando la visualización del formulario y la persistencia de datos.
+     */
     public function crear(): void
     {
         $errores = [];
@@ -71,6 +85,11 @@ class MecanicoController
         require_once __DIR__ . '/../views/mecanico/mecanico_formulario.php';
     }
 
+    /**
+     * Gestiona la actualización de los datos de un mecánico existente.
+     * 
+     * @param string $id Identificador único del mecánico recibido por la ruta.
+     */
     public function editar(string $id): void
     {
         $idMecanico = (int)$id;
@@ -125,6 +144,11 @@ class MecanicoController
         require_once __DIR__ . '/../views/mecanico/mecanico_formulario.php';
     }
 
+    /**
+     * Desactiva lógicamente a un mecánico si este no posee herramientas asignadas activas.
+     * 
+     * @param string $id Identificador del mecánico a desactivar.
+     */
     public function desactivar(string $id): void
     {
         $idMecanico = (int)$id;
@@ -155,6 +179,11 @@ class MecanicoController
         exit;
     }
 
+    /**
+     * Reactiva a un mecánico previamente inactivo en el sistema.
+     * 
+     * @param string $id Identificador del mecánico a activar.
+     */
     public function activar(string $id): void
     {
         $idMecanico = (int)$id;
@@ -176,6 +205,15 @@ class MecanicoController
         exit;
     }
 
+    /**
+     * Valida los datos del formulario de mecánico (campos obligatorios y unicidad de código).
+     * 
+     * @param string    $nombreCompleto Nombre ingresado.
+     * @param string    $codigoEmpleado Código de empleado ingresado.
+     * @param int       $idTaller       Identificador del taller seleccionado.
+     * @param int|null  $idExcluir      ID opcional a excluir en la validación de duplicados (útil en edición).
+     * @return array Arreglo con la lista de errores encontrados.
+     */
     private function validar(string $nombreCompleto, string $codigoEmpleado, int $idTaller, ?int $idExcluir = null): array
     {
         $errores = [];
@@ -197,11 +235,22 @@ class MecanicoController
         return $errores;
     }
 
+    /**
+     * Guarda un mensaje temporal de notificación en la sesión.
+     * 
+     * @param string $texto Contenido del mensaje.
+     * @param string $tipo  Tipo de alerta (ej. 'exito', 'error').
+     */
     private function guardarMensajeFlash(string $texto, string $tipo): void
     {
         $_SESSION['flash'] = ['texto' => $texto, 'tipo' => $tipo];
     }
 
+    /**
+     * Obtiene y limpia el mensaje flash almacenado en la sesión.
+     * 
+     * @return array|null Arreglo con el mensaje y tipo, o null si no existe.
+     */
     private function obtenerMensajeFlash(): ?array
     {
         if (!isset($_SESSION['flash'])) {
