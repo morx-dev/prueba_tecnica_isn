@@ -9,19 +9,12 @@ declare(strict_types=1);
  */
 class Auth
 {
-    /**
-     * Verifica si existe una sesión activa de usuario.
-     * 
-     * @return bool True si el usuario ha iniciado sesión, false en caso contrario.
-     */
     public static function estaLogueado(): bool
     {
         return isset($_SESSION['id_usuario']);
     }
 
-    /**
-     * Corta la ejecución y redirige al login si no hay sesión activa.
-     */
+    // Corta la ejecucion y redirige al login si no hay sesion activa
     public static function requerirLogin(): void
     {
         if (!self::estaLogueado()) {
@@ -30,11 +23,7 @@ class Auth
         }
     }
 
-    /**
-     * Además de exigir login, exige que el rol del usuario actual esté en la lista permitida.
-     * 
-     * @param array $idsRolPermitidos Lista de identificadores de roles con acceso autorizado.
-     */
+    // Ademas de exigir login, exige que el rol este en la lista permitida
     public static function requerirRol(array $idsRolPermitidos): void
     {
         self::requerirLogin();
@@ -44,11 +33,20 @@ class Auth
         }
     }
 
-    /**
-     * Obtiene los datos básicos del usuario actualmente autenticado desde la sesión.
-     * 
-     * @return array|null Arreglo asociativo con la información del usuario o null si no hay sesión.
-     */
+    public static function esAdministrador(): bool
+    {
+        return self::estaLogueado() && (int)$_SESSION['id_rol'] === 1;
+    }
+
+    // Un administrador "pertenece" a cualquier taller. Un encargado, solo al suyo.
+    public static function perteneceATaller(int $idTaller): bool
+    {
+        if (self::esAdministrador()) {
+            return true;
+        }
+        return (int)($_SESSION['id_taller'] ?? 0) === $idTaller;
+    }
+
     public static function usuarioActual(): ?array
     {
         if (!self::estaLogueado()) {

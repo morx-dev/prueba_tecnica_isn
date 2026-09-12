@@ -16,6 +16,8 @@
 </head>
 <body>
 
+<?php require __DIR__ . '/../partials/navbar.php'; ?>
+
 <h1>Usuarios</h1>
 
 <?php if ($mensaje !== null): ?>

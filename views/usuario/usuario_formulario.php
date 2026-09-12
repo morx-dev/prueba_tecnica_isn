@@ -17,6 +17,8 @@
 </head>
 <body>
 
+<?php require __DIR__ . '/../partials/navbar.php'; ?>
+
 <h1>Nuevo usuario</h1>
 
 <?php if (!empty($errores)): ?>

@@ -19,6 +19,8 @@ $mensaje = $mensaje ?? null;
 </head>
 <body>
 
+<?php require __DIR__ . '/../partials/navbar.php'; ?>
+
 <h1>Talleres</h1>
 
 <?php if ($mensaje !== null): ?>

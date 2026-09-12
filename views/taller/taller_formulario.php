@@ -22,6 +22,8 @@ $accion = $esEdicion && isset($taller['id_taller']) ? "/taller/editar/{$taller['
 </head>
 <body>
 
+<?php require __DIR__ . '/../partials/navbar.php'; ?>
+
 <h1><?= $esEdicion ? 'Editar taller' : 'Nuevo taller' ?></h1>
 
 <?php if (!empty($errores)): ?>
