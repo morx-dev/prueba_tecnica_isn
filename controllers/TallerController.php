@@ -21,12 +21,13 @@ class TallerController
         $talleres = $this->modelo->obtenerTodos();
         $mensaje = $this->obtenerMensajeFlash();
 
-        require_once __DIR__ . '/../views/taller/taller.php';
+        require_once __DIR__ . '/../views/taller/taller_index.php';
     }
 
     // Mostrar formulario de creacion y procesarlo
     public function crear(): void
     {
+        Auth::requerirRol([1]);
         $errores = [];
         $taller = null;
 
@@ -48,12 +49,13 @@ class TallerController
         }
 
         $modo = 'crear';
-        require_once __DIR__ . '/../views/taller/formulario.php';
+        require_once __DIR__ . '/../views/taller/taller_formulario.php';
     }
 
     // Mostrar formulario de edicion y procesarlo
     public function editar(string $id): void
     {
+        Auth::requerirRol([1]);
         $idTaller = (int)$id;
         $taller = $this->modelo->obtenerPorId($idTaller);
 
@@ -83,12 +85,13 @@ class TallerController
         }
 
         $modo = 'editar';
-        require_once __DIR__ . '/../views/taller/formulario.php';
+        require_once __DIR__ . '/../views/taller/taller_formulario.php';
     }
 
     // Desactivar un taller (borrado logico, preserva el historial)
     public function desactivar(string $id): void
     {
+        Auth::requerirRol([1]);
         $this->modelo->cambiarEstado((int)$id, 0);
         $this->guardarMensajeFlash('Taller desactivado.', 'exito');
         header('Location: /taller/index');
@@ -98,6 +101,7 @@ class TallerController
     // Reactivar un taller previamente desactivado
     public function activar(string $id): void
     {
+        Auth::requerirRol([1]);
         $this->modelo->cambiarEstado((int)$id, 1);
         $this->guardarMensajeFlash('Taller activado.', 'exito');
         header('Location: /taller/index');
