@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Controlador para la gestión de obsolescencia y reciclaje de herramientas.
+ * Maneja el flujo de marcar herramientas como obsoletas, enviarlas a bodega,
+ * registrar su reciclaje y consultar los reportes correspondientes.
+ */
 class ObsolescenciaController
 {
     private HerramientaObsoletaModel $obsoletoModel;
@@ -8,6 +13,10 @@ class ObsolescenciaController
     private HerramientaModel $herramientaModel;
     private AsignacionModel $asignacionModel;
 
+    /**
+     * Constructor del controlador.
+     * Restringe el acceso a roles autorizados e inicializa los modelos necesarios.
+     */
     public function __construct()
     {
         Auth::requerirRol([1, 2]);
@@ -19,6 +28,10 @@ class ObsolescenciaController
         $this->asignacionModel = new AsignacionModel($db);
     }
 
+    /**
+     * Muestra la bodega de obsoletos: herramientas pendientes de reciclar.
+     * Filtra los registros según el rol del usuario (Administrador ve todo, otros ven su taller).
+     */
     // Bodega de obsoletos: lo que esta pendiente de reciclar
     public function index(): void
     {
@@ -33,6 +46,10 @@ class ObsolescenciaController
         require_once __DIR__ . '/../views/obsolescencia/obsolescencia_index.php';
     }
 
+    /**
+     * Muestra el historial de herramientas que ya han sido recicladas junto con su valor.
+     * Cumple con el segundo reporte requerido por el enunciado del proyecto.
+     */
     // Historial de lo que ya se reciclo, con su valor -- el segundo reporte que pide el enunciado
     public function historial(): void
     {
@@ -45,6 +62,12 @@ class ObsolescenciaController
         require_once __DIR__ . '/../views/obsolescencia/obsolescencia_historial.php';
     }
 
+    /**
+     * Gestiona el formulario y el proceso para marcar una herramienta como obsoleta.
+     * Valida la existencia, permisos por taller y el estado actual de la herramienta.
+     * 
+     * @param string $id Identificador de la herramienta a marcar.
+     */
     // Formulario para marcar una herramienta como obsoleta
     public function marcar(string $id): void
     {
@@ -104,6 +127,12 @@ class ObsolescenciaController
         require_once __DIR__ . '/../views/obsolescencia/obsolescencia_marcar.php';
     }
 
+    /**
+     * Gestiona el formulario y el proceso para registrar el reciclaje de un elemento obsoleto que se encuentra en bodega.
+     * Valida permisos, existencia y que el registro esté pendiente de reciclar.
+     * 
+     * @param string $id Identificador del registro de obsolescencia.
+     */
     // Formulario para registrar el reciclaje de un obsoleto que esta en bodega
     public function reciclar(string $id): void
     {
@@ -155,11 +184,22 @@ class ObsolescenciaController
         require_once __DIR__ . '/../views/obsolescencia/obsolescencia_reciclar.php';
     }
 
+    /**
+     * Guarda un mensaje flash en la sesión para notificaciones temporales en la interfaz.
+     * 
+     * @param string $texto Mensaje a mostrar.
+     * @param string $tipo  Tipo de alerta (ej. 'exito', 'error').
+     */
     private function guardarMensajeFlash(string $texto, string $tipo): void
     {
         $_SESSION['flash'] = ['texto' => $texto, 'tipo' => $tipo];
     }
 
+    /**
+     * Obtiene y limpia el mensaje flash almacenado en la sesión.
+     * 
+     * @return array|null Arreglo con los datos del mensaje o null si no existe.
+     */
     private function obtenerMensajeFlash(): ?array
     {
         if (!isset($_SESSION['flash'])) {

@@ -1,8 +1,12 @@
 <?php
 /**
+ * Vista de la bodega de obsoletos.
+ * Muestra el listado de herramientas declaradas obsoletas que se encuentran pendientes de reciclar,
+ * permitiendo acceder al historial general o registrar el proceso de reciclaje para cada elemento.
+ * 
  * Variables disponibles aqui (pasadas por ObsolescenciaController::index()):
- * array $enBodega
- * array|null $mensaje
+ * array $enBodega Listado de herramientas pendientes de reciclar.
+ * array|null $mensaje Mensaje flash de notificación temporal (tipo y texto).
  */
 ?>
 <!DOCTYPE html>

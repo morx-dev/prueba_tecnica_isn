@@ -1,8 +1,13 @@
 <?php
 /**
+ * Vista para registrar el reciclaje de una herramienta obsoleta.
+ * Muestra los detalles de la herramienta en bodega (nombre, taller y motivo),
+ * el manejo de errores de validación y el formulario para ingresar los datos de reciclaje
+ * (peso en kg, valor estimado en Quetzales y observaciones).
+ * 
  * Variables disponibles aqui (pasadas por ObsolescenciaController::reciclar()):
- * array $obsoleto
- * array $errores
+ * array $obsoleto Datos del registro obsoleto a procesar.
+ * array $errores  Listado de errores de validación del formulario (si existen).
  */
 ?>
 <!DOCTYPE html>

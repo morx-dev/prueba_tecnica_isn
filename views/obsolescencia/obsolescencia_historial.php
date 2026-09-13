@@ -1,7 +1,11 @@
 <?php
 /**
+ * Vista del historial de herramientas recicladas.
+ * Muestra el listado de elementos que han sido procesados y reciclados,
+ * junto con un cálculo del valor total estimado recuperado y detalles por registro.
+ * 
  * Variable disponible aqui (pasada por ObsolescenciaController::historial()):
- * array $reciclados
+ * array $reciclados Listado de registros de herramientas recicladas.
  */
 $valorTotal = array_sum(array_column($reciclados, 'valor_estimado'));
 ?>

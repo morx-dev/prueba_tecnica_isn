@@ -1,15 +1,31 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Modelo para la gestión de asignaciones de herramientas a mecánicos.
+ * Encapsula las operaciones de base de datos relacionadas con el ciclo de vida
+ * de las asignaciones (crear, consultar historial, cerrar asignaciones mediante transacciones).
+ */
 class AsignacionModel
 {
     private PDO $db;
 
+    /**
+     * Constructor del modelo.
+     * 
+     * @param PDO $conexion Instancia de la conexión a la base de datos.
+     */
     public function __construct(PDO $conexion)
     {
         $this->db = $conexion;
     }
 
+    /**
+     * Obtiene la asignación activa actual para una herramienta específica.
+     * 
+     * @param int $idHerramienta Identificador de la herramienta.
+     * @return array|null Arreglo con los datos de la asignación o null si no se encuentra activa.
+     */
     public function obtenerActivaPorHerramienta(int $idHerramienta): ?array
     {
         $stmt = $this->db->prepare(
@@ -20,6 +36,10 @@ class AsignacionModel
         return $resultado !== false ? $resultado : null;
     }
 
+    /**
+     * Obtiene el historial completo de asignaciones (activas y finalizadas) de una herramienta,
+     * ordenadas de la más reciente a la más antigua, incluyendo el nombre del mecánico.
+     */
     // Historial completo de una herramienta (activa y finalizadas), mas reciente primero
     public function obtenerHistorialPorHerramienta(int $idHerramienta): array
     {
@@ -37,6 +57,11 @@ class AsignacionModel
     /**
      * Crea la asignacion Y marca la herramienta como 'asignada' en una sola transaccion.
      * Si cualquiera de los dos pasos falla, ninguno queda guardado.
+     * 
+     * @param int $idHerramienta       Identificador de la herramienta a asignar.
+     * @param int $idMecanico          Identificador del mecánico que recibe la herramienta.
+     * @param int $idUsuarioRegistro   Identificador del usuario que registra la operación.
+     * @return bool True si la transacción es exitosa, false en caso contrario.
      */
     public function asignar(int $idHerramienta, int $idMecanico, int $idUsuarioRegistro): bool
     {
@@ -69,6 +94,10 @@ class AsignacionModel
 
     /**
      * Cierra la asignacion activa Y regresa la herramienta a 'disponible', en una sola transaccion.
+     * 
+     * @param int $idAsignacion  Identificador de la asignación a finalizar.
+     * @param int $idHerramienta Identificador de la herramienta devuelta.
+     * @return bool True si la transacción es exitosa, false en caso contrario.
      */
     public function devolver(int $idAsignacion, int $idHerramienta): bool
     {

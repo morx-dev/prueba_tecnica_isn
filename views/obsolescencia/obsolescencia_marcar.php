@@ -1,8 +1,12 @@
 <?php
 /**
+ * Vista para marcar una herramienta como obsoleta.
+ * Muestra los detalles de la herramienta seleccionada (incluyendo información de asignación si aplica),
+ * el manejo de errores de validación y el formulario para ingresar el motivo del reemplazo u obsolescencia.
+ * 
  * Variables disponibles aqui (pasadas por ObsolescenciaController::marcar()):
- * array $herramienta
- * array $errores
+ * array $herramienta Datos de la herramienta a procesar.
+ * array $errores       Listado de errores de validación del formulario (si existen).
  */
 ?>
 <!DOCTYPE html>

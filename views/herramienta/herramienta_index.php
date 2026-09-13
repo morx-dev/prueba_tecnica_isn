@@ -1,8 +1,12 @@
 <?php
 /**
- * Variables disponibles aqui (pasadas por HerramientaController::index()):
- * array $herramientas
- * array|null $mensaje
+ * Vista principal para el listado de herramientas.
+ * Muestra una tabla con el inventario de herramientas, sus estados, asignaciones actuales
+ * y permite realizar operaciones como editar, asignar, devolver o marcar como obsoleta.
+ * 
+ * Variables disponibles (pasadas por HerramientaController::index()):
+ * array $herramientas Listado de herramientas registradas en el sistema.
+ * array|null $mensaje  Mensaje flash de notificación temporal (tipo y texto).
  */
 ?>
 <!DOCTYPE html>
@@ -67,12 +71,12 @@
                             <a href="/herramienta/asignar/<?= (int)$herramienta['id_herramienta'] ?>">Asignar</a>
                         <?php elseif ($herramienta['estado'] === 'asignada'): ?>
                             <a href="/herramienta/devolver/<?= (int)$herramienta['id_herramienta'] ?>"
-                               data-confirm="¿Marcar esta herramienta como devuelta?">Devolver</a>
+                                data-confirm="¿Marcar esta herramienta como devuelta?">Devolver</a>
                         <?php endif; ?>
 
                         <?php if (in_array($herramienta['estado'], ['disponible', 'asignada'], true)): ?>
                             <a href="/obsolescencia/marcar/<?= (int)$herramienta['id_herramienta'] ?>"
-                               data-confirm="¿Marcar esta herramienta como obsoleta?">Marcar obsoleta</a>
+                                data-confirm="¿Marcar esta herramienta como obsoleta?">Marcar obsoleta</a>
                         <?php endif; ?>
                     </td>
                 </tr>
