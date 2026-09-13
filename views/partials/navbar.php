@@ -16,6 +16,7 @@ $usuarioActual = Auth::usuarioActual();
         <li><a href="/taller/index">Talleres</a></li>
         <li><a href="/mecanico/index">Mecánicos</a></li>
         <li><a href="/herramienta/index">Herramientas</a></li>
+        <li><a href="/obsolescencia/index">Obsolescencia</a></li>
         <?php 
         // Restringe el enlace de gestión de usuarios exclusivamente para administradores (id_rol === 1)
         if ($usuarioActual !== null && (int)$usuarioActual['id_rol'] === 1): 

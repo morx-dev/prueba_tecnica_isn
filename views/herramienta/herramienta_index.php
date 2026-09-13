@@ -1,10 +1,8 @@
 <?php
 /**
- * Vista para el listado general de herramientas del sistema.
- * 
- * Variables disponibles (pasadas por HerramientaController::index()):
- * @var array      $herramientas Listado de herramientas registradas con su información y estado
- * @var array|null $mensaje      Arreglo opcional con tipo y texto de mensaje flash para notificaciones
+ * Variables disponibles aqui (pasadas por HerramientaController::index()):
+ * array $herramientas
+ * array|null $mensaje
  */
 ?>
 <!DOCTYPE html>
@@ -28,7 +26,9 @@
 
 <a href="/herramienta/crear" class="boton boton-primario">+ Nueva herramienta</a>
 
-<table class="tabla">
+<input type="text" class="buscador" data-tabla="tabla-herramientas" placeholder="Buscar herramienta...">
+
+<table class="tabla" id="tabla-herramientas">
     <thead>
         <tr>
             <th>ID</th>
@@ -59,12 +59,20 @@
                     </td>
                     <td><?= htmlspecialchars($herramienta['mecanico_actual'] ?? '-') ?></td>
                     <td>
-                        <a href="/herramienta/editar/<?= (int)$herramienta['id_herramienta'] ?>">Editar</a>
+                        <?php if (in_array($herramienta['estado'], ['disponible', 'asignada'], true)): ?>
+                            <a href="/herramienta/editar/<?= (int)$herramienta['id_herramienta'] ?>">Editar</a>
+                        <?php endif; ?>
+
                         <?php if ($herramienta['estado'] === 'disponible'): ?>
                             <a href="/herramienta/asignar/<?= (int)$herramienta['id_herramienta'] ?>">Asignar</a>
                         <?php elseif ($herramienta['estado'] === 'asignada'): ?>
                             <a href="/herramienta/devolver/<?= (int)$herramienta['id_herramienta'] ?>"
-                                onclick="return confirm('¿Marcar esta herramienta como devuelta?');">Devolver</a>
+                               data-confirm="¿Marcar esta herramienta como devuelta?">Devolver</a>
+                        <?php endif; ?>
+
+                        <?php if (in_array($herramienta['estado'], ['disponible', 'asignada'], true)): ?>
+                            <a href="/obsolescencia/marcar/<?= (int)$herramienta['id_herramienta'] ?>"
+                               data-confirm="¿Marcar esta herramienta como obsoleta?">Marcar obsoleta</a>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -73,5 +81,6 @@
     </tbody>
 </table>
 
+<?php require __DIR__ . '/../partials/footer.php'; ?>
 </body>
 </html>

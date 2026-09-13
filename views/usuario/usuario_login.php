@@ -37,5 +37,6 @@ if ($error !== null):
     <button type="submit" class="boton boton-primario">Entrar</button>
 </form>
 
+<?php require __DIR__ . '/../partials/footer.php'; ?>
 </body>
 </html>

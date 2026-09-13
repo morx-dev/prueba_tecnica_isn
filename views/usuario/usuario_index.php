@@ -82,5 +82,6 @@ if ($mensaje !== null):
     </tbody>
 </table>
 
+<?php require __DIR__ . '/../partials/footer.php'; ?>
 </body>
 </html>

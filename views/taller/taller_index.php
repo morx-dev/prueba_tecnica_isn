@@ -31,7 +31,9 @@ $mensaje = $mensaje ?? null;
 
 <a href="/taller/crear" class="boton boton-primario">+ Nuevo taller</a>
 
-<table class="tabla">
+<input type="text" class="buscador" data-tabla="tabla-talleres" placeholder="Buscar taller...">
+
+<table class="tabla" id="tabla-talleres">
     <thead>
         <tr>
             <th>ID</th>
@@ -65,7 +67,7 @@ $mensaje = $mensaje ?? null;
                         <a href="/taller/editar/<?= (int)$taller['id_taller'] ?>">Editar</a>
                         <?php if ((int)$taller['estado'] === 1): ?>
                             <a href="/taller/desactivar/<?= (int)$taller['id_taller'] ?>"
-                                onclick="return confirm('¿Desactivar este taller?');">Desactivar</a>
+                                data-confirm="¿Desactivar este taller?">Desactivar</a>
                         <?php else: ?>
                             <a href="/taller/activar/<?= (int)$taller['id_taller'] ?>">Activar</a>
                         <?php endif; ?>
@@ -76,5 +78,6 @@ $mensaje = $mensaje ?? null;
     </tbody>
 </table>
 
+<?php require __DIR__ . '/../partials/footer.php'; ?>
 </body>
 </html>

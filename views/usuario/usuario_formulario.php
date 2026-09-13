@@ -79,5 +79,6 @@ if (!empty($errores)):
     <a href="/usuario/index" class="boton boton-secundario">Cancelar</a>
 </form>
 
+<?php require __DIR__ . '/../partials/footer.php'; ?>
 </body>
 </html>

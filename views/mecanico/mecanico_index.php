@@ -35,7 +35,9 @@ if ($mensaje !== null):
 <!-- Botón de acceso directo para registrar un nuevo mecánico -->
 <a href="/mecanico/crear" class="boton boton-primario">+ Nuevo mecánico</a>
 
-<table class="tabla">
+<input type="text" class="buscador" data-tabla="tabla-mecanicos" placeholder="Buscar mecánico...">
+
+<table class="tabla" id="tabla-mecanicos">
     <thead>
         <tr>
             <th>ID</th>
@@ -70,9 +72,9 @@ if ($mensaje !== null):
                         <!-- Enlace para redirigir al formulario de edición del mecánico -->
                         <a href="/mecanico/editar/<?= (int)$mecanico['id_mecanico'] ?>">Editar</a>
                         <?php if ((int)$mecanico['estado'] === 1): ?>
-                            <!-- Acción para desactivar con confirmación previa en JavaScript -->
+                            <!-- Acción para desactivar con confirmación previa vía data-confirm (main.js) -->
                             <a href="/mecanico/desactivar/<?= (int)$mecanico['id_mecanico'] ?>"
-                               onclick="return confirm('¿Desactivar este mecánico?');">Desactivar</a>
+                               data-confirm="¿Desactivar este mecánico?">Desactivar</a>
                         <?php else: ?>
                             <!-- Acción para reactivar al mecánico -->
                             <a href="/mecanico/activar/<?= (int)$mecanico['id_mecanico'] ?>">Activar</a>
@@ -84,5 +86,6 @@ if ($mensaje !== null):
     </tbody>
 </table>
 
+<?php require __DIR__ . '/../partials/footer.php'; ?>
 </body>
 </html>

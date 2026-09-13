@@ -70,5 +70,6 @@ $accion = $esEdicion ? "/herramienta/editar/{$herramienta['id_herramienta']}" : 
     <a href="/herramienta/index" class="boton boton-secundario">Cancelar</a>
 </form>
 
+<?php require __DIR__ . '/../partials/footer.php'; ?>
 </body>
 </html>
